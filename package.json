@@ -227,5 +227,8 @@
     "type": "modules",
     "jsSrcsDir": "src"
   },
-  "packageManager": "yarn@1.22.22"
+  "packageManager": "yarn@1.22.22",
+  "dependencies": {
+    "llama.rn": "^0.3.11"
+  }
 }

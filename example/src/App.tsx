@@ -1,10 +1,10 @@
 import React, { useState, useRef } from 'react'
 import type { ReactNode } from 'react'
-import { Platform } from 'react-native'
+import { Platform, Text, StyleSheet } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import DocumentPicker from 'react-native-document-picker'
 import type { DocumentPickerResponse } from 'react-native-document-picker'
-import { Chat, darkTheme } from '@flyerhq/react-native-chat-ui'
+import { Chat, defaultTheme } from '@flyerhq/react-native-chat-ui'
 import type { MessageType } from '@flyerhq/react-native-chat-ui'
 import json5 from 'json5'
 import ReactNativeBlobUtil from 'react-native-blob-util'
@@ -92,19 +92,17 @@ export default function App() {
       .then((ctx) => {
         setContext(ctx)
         addSystemMessage(
-          `Context initialized! \n\nGPU: ${ctx.gpu ? 'YES' : 'NO'} (${
-            ctx.reasonNoGPU
-          })\nChat Template: ${
-            ctx.model.isChatTemplateSupported ? 'YES' : 'NO'
+          `Context initialized! \n\nGPU: ${ctx.gpu ? 'YES' : 'NO'} (${ctx.reasonNoGPU
+          })\nChat Template: ${ctx.model.isChatTemplateSupported ? 'YES' : 'NO'
           }\n\n` +
-            'You can use the following commands:\n\n' +
-            '- /info: to get the model info\n' +
-            '- /bench: to benchmark the model\n' +
-            '- /release: release the context\n' +
-            '- /stop: stop the current completion\n' +
-            '- /reset: reset the conversation' +
-            '- /save-session: save the session tokens\n' +
-            '- /load-session: load the session tokens',
+          'You can use the following commands:\n\n' +
+          '- /info: to get the model info\n' +
+          '- /bench: to benchmark the model\n' +
+          '- /release: release the context\n' +
+          '- /stop: stop the current completion\n' +
+          '- /reset: reset the conversation' +
+          '- /save-session: save the session tokens\n' +
+          '- /load-session: load the session tokens',
         )
       })
       .catch((err) => {
@@ -124,9 +122,8 @@ export default function App() {
             if (!(await ReactNativeBlobUtil.fs.isDir(dir)))
               await ReactNativeBlobUtil.fs.mkdir(dir)
 
-            const filepath = `${dir}/${
-              file.uri.split('/').pop() || 'model'
-            }.gguf`
+            const filepath = `${dir}/${file.uri.split('/').pop() || 'model'
+              }.gguf`
             if (await ReactNativeBlobUtil.fs.exists(filepath)) {
               handleInitContext({ uri: filepath } as DocumentPickerResponse)
               return
@@ -444,10 +441,14 @@ export default function App() {
   }
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider >
+      <Text style={styles.title}>Offline Tutor</Text>
       <Chat
         renderBubble={renderBubble}
-        theme={darkTheme}
+        theme={{
+          ...defaultTheme,
+          colors: { ...defaultTheme.colors, secondary: '#faa13d', inputBackground: '#5b25ff' , background: '#f57d4a', inputText: '#fffde9', text: '#fffde9'},
+        }}
         messages={messages}
         onSendPress={handleSendPress}
         user={user}
@@ -462,3 +463,12 @@ export default function App() {
     </SafeAreaProvider>
   )
 }
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: 'white',
+    backgroundColor: '#f57d4a',
+    padding: 10,
+  },
+})
